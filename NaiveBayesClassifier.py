@@ -1,3 +1,7 @@
+# 朴素贝叶斯分类器
+#
+# 加入拉普拉斯修正
+
 import numpy as np
 
 
@@ -5,7 +9,7 @@ class NaiveBayesClassifier:
     def __init__(self, smoothing=False):
         self.label_prob = {}
         self.condition_prob = {}
-        self.smoothing = False
+        self.smoothing = smoothing
 
     def _cal_prob(self, array, labels):
         n = len(array)
@@ -16,7 +20,6 @@ class NaiveBayesClassifier:
                 probs[label] = (np.sum(array==label) + 1 ) / (n + len(labels))
             else:
                 probs[label] = np.sum(array==label) / n
-
         return probs
 
     def fit(self, X, y):
@@ -38,5 +41,9 @@ class NaiveBayesClassifier:
                     prob *= self.condition_prob[label][j].get(X[i, j], 0)
                 probs[label] = prob
             y_pred.append(max(probs, key=probs.get))
-        return y_pred
+        return np.array(y_pred)
+
+    def score(self, X, y):
+        y_pred = self.predict(X)
+        return np.sum(y == y_pred) / len(y)
 

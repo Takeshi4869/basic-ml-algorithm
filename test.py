@@ -3,7 +3,6 @@ from sklearn.datasets import load_boston, load_breast_cancer, load_iris
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pandas as pd
 import os
 
 def cross_validation(model, X, y, fold=5):
@@ -36,7 +35,6 @@ class LinearRegressionTestCase(unittest.TestCase):
         print("Linear Regression with closed solution method: MSE =", mse)
 
 
-
 class LogisticRegressionTestCase(unittest.TestCase):
     def testNewton(self):
         from LogisticRegression import LogisticRegression
@@ -66,6 +64,18 @@ class LogisticRegressionTestCase(unittest.TestCase):
     #     acc = np.mean(cross_validation(lr, X_train, y_train))
     #     print("Logisitic regression with closed solution method: accuracy =",
 
+
+class DecisionTreeTestCase(unittest.TestCase):
+    def testSmoke(self):
+        from DecisionTree import DecisionTree
+        dt = DecisionTree()
+        feature = np.array([[0, 1], [1, 0], [1, 2], [0, 0], [1, 1]])
+        label = np.array([0, 1, 0, 0, 1])
+        dt.fit(feature, label)
+        y_pred = dt.predict(feature)
+        assert (y_pred == label).all()
+
+
 class SVMTestCase(unittest.TestCase):
     def testQP(self):
         from SVM import SVM
@@ -91,28 +101,6 @@ class SVMTestCase(unittest.TestCase):
         print("SVM with SMO: accuracy =", acc)
 
 
-class KNNTestCase(unittest.TestCase):
-    def testBreastCancer(self):
-        from KNN import KNNClassifier
-        breast_cancer = load_breast_cancer()
-        knn = KNNClassifier(k=5)
-        X_train = breast_cancer.data
-        y_train = breast_cancer.target
-        accuracy = np.mean(cross_validation(knn, X_train, y_train))
-        print("KNN: accuracy =", accuracy)
-
-class PerceptionTestCase(unittest.TestCase):
-    def testBreastCancer(self):
-        from Perceptron import Perceptron
-        breast_cancer = load_breast_cancer()
-        X_train = breast_cancer.data
-        y_train = breast_cancer.target
-        y_train[y_train == 0] = -1
-        perceptron = Perceptron()
-        accuracy = np.mean(cross_validation(perceptron, X_train, y_train))
-        print("Perceptron: accuracy =", accuracy)
-
-
 class BayesTestCase(unittest.TestCase):
     def testIris(self):
         from NaiveBayesClassifier import NaiveBayesClassifier
@@ -123,16 +111,6 @@ class BayesTestCase(unittest.TestCase):
         accuracy = np.mean(cross_validation(nb, X_train, y_train))
         print("NaiveBayesClassifier with Laplacian correction: accuracy:", accuracy)
 
-
-class DecisionTreeTestCase(unittest.TestCase):
-    def testSmoke(self):
-        from DecisionTree import DecisionTree
-        dt = DecisionTree()
-        feature = np.array([[0, 1], [1, 0], [1, 2], [0, 0], [1, 1]])
-        label = np.array([0, 1, 0, 0, 1])
-        dt.fit(feature, label)
-        y_pred = dt.predict(feature)
-        assert (y_pred == label).all()
 
 class NeuralNetworkTestCase(unittest.TestCase):
     def testNN221(self):
@@ -146,6 +124,29 @@ class NeuralNetworkTestCase(unittest.TestCase):
         model = NeuralNetwork221()
         accuracy = np.mean(cross_validation(model, X_train, y_train))
         print("NeuralNetwork 2-2-1: MSE =", accuracy)
+
+
+class PerceptionTestCase(unittest.TestCase):
+    def testBreastCancer(self):
+        from Perceptron import Perceptron
+        breast_cancer = load_breast_cancer()
+        X_train = breast_cancer.data
+        y_train = breast_cancer.target
+        y_train[y_train == 0] = -1
+        perceptron = Perceptron()
+        accuracy = np.mean(cross_validation(perceptron, X_train, y_train))
+        print("Perceptron: accuracy =", accuracy)
+
+
+class KNNTestCase(unittest.TestCase):
+    def testBreastCancer(self):
+        from KNN import KNNClassifier
+        breast_cancer = load_breast_cancer()
+        knn = KNNClassifier(k=5)
+        X_train = breast_cancer.data
+        y_train = breast_cancer.target
+        accuracy = np.mean(cross_validation(knn, X_train, y_train))
+        print("KNN: accuracy =", accuracy)
 
 
 class ClusteringTestCase(unittest.TestCase):
@@ -189,30 +190,31 @@ class EnsemblingTestCase(unittest.TestCase):
         print("RandomForest: accuracy =", acc)
 
 
-# class DimensionReductionTestCase(unittest.TestCase):
-#     def testPCA(self):
-#         from DimensionReduction import PCA
-#         breast_cancer = load_iris()
-#         X = breast_cancer.data
-#         y = breast_cancer.target
-#         pca = PCA(k=2)
-#         pca.fit(X)
-#         X_transformed = pca.transform(X)
-#         sns.scatterplot(x=X_transformed[:, 0], y=X_transformed[:, 1], hue=y)
-#         plt.title("PCA")
-#         plt.show()
-#
-#     def testLDA(self):
-#         from DimensionReduction import LDA
-#         breast_cancer = load_breast_cancer()
-#         X = breast_cancer.data
-#         y = breast_cancer.target
-#         lda = LDA()
-#         lda.fit(X, y)
-#         X_transformed = lda.transform(X)
-#         sns.scatterplot(x=X_transformed, y=0, hue=y)
-#         plt.title("LDA")
-#         plt.show()
+class DimensionReductionTestCase(unittest.TestCase):
+    def testPCA(self):
+        from DimensionReduction import PCA
+        breast_cancer = load_iris()
+        X = breast_cancer.data
+        y = breast_cancer.target
+        pca = PCA(k=2)
+        pca.fit(X)
+        X_transformed = pca.transform(X)
+        sns.scatterplot(x=X_transformed[:, 0], y=X_transformed[:, 1], hue=y)
+        plt.title("PCA")
+        plt.show()
+
+    def testLDA(self):
+        from DimensionReduction import LDA
+        breast_cancer = load_breast_cancer()
+        X = breast_cancer.data
+        y = breast_cancer.target
+        lda = LDA()
+        lda.fit(X, y)
+        X_transformed = lda.transform(X)
+        sns.scatterplot(x=X_transformed, y=0, hue=y)
+        plt.title("LDA")
+        plt.show()
+
 
 if __name__ == '__main__':
     unittest.main()
